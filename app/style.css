@@ -171,6 +171,7 @@ body {
   right:16px;
   font-size:14px;
   user-select:none;
+    display: none !important;
 }
 .level input{
   vertical-align:middle;
@@ -195,7 +196,6 @@ body {
   min-width:32px;
   display:inline-block;
   text-align:right;
-  display: none !important;
 }
 
 .meter-label{
