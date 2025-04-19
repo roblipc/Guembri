@@ -29,10 +29,10 @@ Meter.prototype.createLabels = function(){
     lbl.textContent=text;
     this.$root.appendChild(lbl);
   };
-  createLabel(-45,'−½',24);
-  createLabel(-22.5,'−¼',18);
-  createLabel(22.5,'+¼',18);
-  createLabel(45,'+½',24);
+//  createLabel(-45,'−½',24);
+//  createLabel(-22.5,'−¼',18);
+//  createLabel(22.5,'+¼',18);
+//  createLabel(45,'+½',24);
 };
 
 /**
