@@ -17,6 +17,12 @@ const Tuner = function (a4) {
     "B",
   ];
 
+  // minimum RMS volume (0.0 - 1.0) required to consider a pitch
+  this.volumeThreshold = 0.03;
+  this.minFundamental = 50; // Hz
+  this.maxFundamental = 220; // Hz (adjust depending on instrument range)
+
+
   this.initGetUserMedia();
 };
 
@@ -63,11 +69,28 @@ Tuner.prototype.startRecord = function () {
       self.analyser.connect(self.scriptProcessor);
       self.scriptProcessor.connect(self.audioContext.destination);
       self.scriptProcessor.addEventListener("audioprocess", function (event) {
-        const frequency = self.pitchDetector.do(
+        
+        // Calculate RMS volume and ignore if below threshold
+        const buf = event.inputBuffer.getChannelData(0);
+        let sum = 0;
+        for (let i = 0; i < buf.length; i++) {
+          sum += buf[i] * buf[i];
+        }
+        const rms = Math.sqrt(sum / buf.length);
+        if (rms < self.volumeThreshold) {
+          return;
+        }
+const frequency = self.pitchDetector.do(
           event.inputBuffer.getChannelData(0)
         );
         if (frequency && self.onNoteDetected) {
-          const note = self.getNote(frequency);
+          
+        // octave / harmonic correction
+        if(frequency){
+          while(frequency > self.maxFundamental){ frequency /= 2;}
+          while(frequency < self.minFundamental){ frequency *= 2;}
+        }
+        const note = self.getNote(frequency);
           self.onNoteDetected({
             name: self.noteStrings[note % 12],
             value: note,
@@ -96,7 +119,7 @@ Tuner.prototype.init = function () {
 
   aubio().then(function (aubio) {
     self.pitchDetector = new aubio.Pitch(
-      "default",
+      "yinfft",
       self.bufferSize,
       1,
       self.audioContext.sampleRate
@@ -158,4 +181,13 @@ Tuner.prototype.stopOscillator = function () {
     this.oscillator.stop();
     this.oscillator = null;
   }
+};
+
+
+/**
+ * set minimum volume threshold (0.0 - 1.0)
+ * @param {number} threshold
+ */
+Tuner.prototype.setVolumeThreshold = function(threshold){
+  this.volumeThreshold = threshold;
 };

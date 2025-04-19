@@ -4,6 +4,28 @@ const Application = function () {
   this.notes = new Notes(".notes", this.tuner);
   this.meter = new Meter(".meter");
   this.frequencyBars = new FrequencyBars(".frequency-bars");
+  // slider to adjust minimum volume threshold
+  this.$level = document.getElementById('level');
+    this.$levelValue = document.getElementById('levelValue');
+    const updateSliderLabel = ()=>{
+      if(this.$levelValue){
+        this.$levelValue.textContent = this.$level.value + '%';
+      }
+    };
+    updateSliderLabel();
+    this.$level.addEventListener('input', ()=>{
+      this.tuner.setVolumeThreshold(this.$level.value/100);
+      updateSliderLabel();
+    });
+
+  if(this.$level){
+    // initial value maps 0-100 to 0-1
+    this.tuner.setVolumeThreshold(this.$level.value/100);
+    this.$level.addEventListener('input', ()=>{
+      this.tuner.setVolumeThreshold(this.$level.value/100);
+    });
+  }
+
   this.update({
     name: "A",
     frequency: this.a4,
