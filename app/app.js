@@ -1,7 +1,7 @@
 const Application = function () {
   this.initA4();
   this.tuner = new Tuner(this.a4);
-  this.tuner.setVolumeThreshold(0); // seuil forcé à 0 (aucun filtre)
+  this.tuner.setVolumeThreshold(0.02); // 0.01–0.05	Filtrage léger (souffles ignorés)
   this.notes = new Notes(".notes", this.tuner);
   this.meter = new Meter(".meter");
   this.frequencyBars = new FrequencyBars(".frequency-bars");
